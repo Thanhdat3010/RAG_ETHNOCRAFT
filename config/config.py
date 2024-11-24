@@ -27,6 +27,11 @@ GOOGLE_API_KEYS = [
 # Tạo instance của API Key Manager
 key_manager = APIKeyManager(GOOGLE_API_KEYS)
 
-FOLDER_PATH = "data"
+# Thay đổi cấu trúc thư mục
+DATA_ROOT = "data"  # Thư mục gốc chứa dữ liệu
+DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
+    "SáchGiáoKhoaCTM",
+    # Thêm các thư mục khác tùy nhu cầu
+]
 VECTOR_STORE_PATH = "vector_store"
 FILE_HASH_PATH = "file_hashes/file_hashes.pkl"

@@ -3,7 +3,7 @@ import pickle
 import hashlib
 from langchain_community.vectorstores import Chroma
 import logging
-from config.config import VECTOR_STORE_PATH, FILE_HASH_PATH
+from config.config import VECTOR_STORE_PATH, FILE_HASH_PATH, DATA_FOLDERS
 # File này để lưu trữ và quản lý các tài liệu và vectors
 class DocumentStore:
     def __init__(self, embeddings):
@@ -14,6 +14,8 @@ class DocumentStore:
         self.embeddings = embeddings
         self.file_hashes = self.load_file_hashes()
         self.vector_store = self.initialize_vector_store()
+        # Thêm dòng này để tự động cleanup khi khởi tạo
+        self.cleanup_deleted_files()
 
     def load_file_hashes(self):
         if os.path.exists(self.file_hash_path):
@@ -54,9 +56,17 @@ class DocumentStore:
                 logging.info(f"Xóa vectors cũ của file: {file_path}")
                 self.vector_store.delete(where={"source": file_path})
             
-            # Add new vectors
+            # Add new vectors with additional metadata
             logging.info(f"Thêm {len(texts)} chunks mới vào vector store")
-            metadatas = [{"source": file_path} for _ in texts]
+            # Xác định subject từ đường dẫn file
+            subject = next((folder for folder in DATA_FOLDERS 
+                          if folder in file_path.split(os.sep)), "unknown")
+            
+            metadatas = [{
+                "source": file_path,
+                "subject": subject
+            } for _ in texts]
+            
             self.vector_store.add_texts(texts, metadatas=metadatas)
             
             # Update hash
@@ -69,3 +79,21 @@ class DocumentStore:
         except Exception as e:
             logging.error(f"❌ Lỗi khi cập nhật vectors cho {file_path}: {str(e)}")
             return False
+
+    def cleanup_deleted_files(self):
+        """Xóa vectors của những file không còn tồn tại."""
+        deleted_files = []
+        for file_path in self.file_hashes.keys():
+            if not os.path.exists(file_path):
+                logging.info(f"Phát hiện file đã xóa: {file_path}")
+                self.vector_store.delete(where={"source": file_path})
+                deleted_files.append(file_path)
+        
+        # Cập nhật file_hashes
+        for file_path in deleted_files:
+            del self.file_hashes[file_path]
+        
+        if deleted_files:
+            self.save_file_hashes()
+            self.vector_store.persist()
+            logging.info(f"Đã xóa vectors của {len(deleted_files)} files không còn tồn tại")

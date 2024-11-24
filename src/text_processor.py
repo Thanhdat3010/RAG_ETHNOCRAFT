@@ -2,10 +2,16 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, UnstructuredWordDocumentLoader, TextLoader
 import logging
 import os
+from config.config import DATA_FOLDERS
+
 # File này để xử lý tài liệu
 class DocumentProcessor:
     @staticmethod
     def load_document(file_path: str):
+        # Kiểm tra xem file có nằm trong thư mục hợp lệ không
+        if not any(folder in file_path.split(os.sep) for folder in DATA_FOLDERS):
+            raise ValueError(f"File không nằm trong thư mục được cấu hình: {file_path}")
+            
         file_extension = os.path.splitext(file_path)[1].lower()
         if file_extension == '.pdf':
             return PyPDFLoader(file_path)

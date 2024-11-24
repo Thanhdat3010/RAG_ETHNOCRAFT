@@ -3,7 +3,17 @@ from flask_cors import CORS
 import logging
 import json
 from src.bot import ChemGenieBot
-from config.config import key_manager, FOLDER_PATH
+from config.config import key_manager, DATA_ROOT
+import warnings
+
+# Bỏ qua tất cả warnings từ PyPDF
+warnings.filterwarnings('ignore')
+
+# Hoặc cụ thể hơn cho warnings liên quan đến Xref
+warnings.filterwarnings('ignore', message='.*Xref table invalid.*')
+
+# Tùy chọn: Set logging level cho pypdf lên ERROR
+logging.getLogger('pypdf').setLevel(logging.ERROR)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -13,7 +23,7 @@ logging.basicConfig(
 app = Flask(__name__)
 CORS(app)
 
-bot = ChemGenieBot(key_manager, FOLDER_PATH)
+bot = ChemGenieBot(key_manager, DATA_ROOT)
 
 @app.route('/chat', methods=['POST'])
 def chat():

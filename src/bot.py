@@ -13,12 +13,13 @@ from .ranking import DocumentRanker
 from .question_classifier import QuestionClassifier
 from .multi_query import MultiQueryRetriever
 from .rag_fusion import RAGFusionRetriever
+from config.config import DATA_FOLDERS
 
 class ChemGenieBot:
-    def __init__(self, key_manager, folder_path):
+    def __init__(self, key_manager, data_root):
         logging.info("Đang khởi tạo ChemGenieBot...")
         self.key_manager = key_manager
-        self.folder_path = folder_path
+        self.data_root = data_root
         self.setup_model()
         self.setup_components()
         self.load_and_process_documents()
@@ -47,13 +48,23 @@ class ChemGenieBot:
 
     def load_and_process_documents(self):
         logging.info("Bắt đầu quá trình đọc tài liệu...")
-        pdf_files = glob.glob(os.path.join(self.folder_path, "*.pdf"))
-        word_files = glob.glob(os.path.join(self.folder_path, "*.docx"))
-        txt_files = glob.glob(os.path.join(self.folder_path, "*.txt"))
-        all_files = pdf_files + word_files + txt_files
+        all_files = []
+        
+        # Duyệt qua tất cả thư mục con trong DATA_FOLDERS
+        for folder in DATA_FOLDERS:
+            folder_path = os.path.join(self.data_root, folder)
+            if not os.path.exists(folder_path):
+                logging.warning(f"Thư mục {folder_path} không tồn tại")
+                continue
+                
+            # Thu thập files từ mỗi thư mục
+            pdf_files = glob.glob(os.path.join(folder_path, "*.pdf"))
+            word_files = glob.glob(os.path.join(folder_path, "*.docx"))
+            txt_files = glob.glob(os.path.join(folder_path, "*.txt"))
+            all_files.extend(pdf_files + word_files + txt_files)
 
         if not all_files:
-            raise ValueError("Không tìm thấy tài liệu hỗ trợ trong thư mục.")
+            raise ValueError("Không tìm thấy tài liệu hỗ trợ trong các thư mục.")
 
         for file_path in all_files:
             current_hash = self.doc_store.calculate_file_hash(file_path)
