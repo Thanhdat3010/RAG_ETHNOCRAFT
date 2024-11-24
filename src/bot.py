@@ -193,8 +193,7 @@ class ChemGenieBot:
             
             # Xử lý câu hỏi chuyên môn bằng RAG
             logging.info("Đang tìm kiếm tài liệu liên quan...")
-            # retrieved_docs = self.multi_query.retrieve(question, self.vector_index)
-            # retrieved_docs = self.vector_index.invoke(question)  
+    
             doc_scores = self.rag_fusion.retrieve(question, self.vector_index)
     # Chỉ lấy documents (bỏ scores)
             retrieved_docs = [doc for doc, score in doc_scores]   

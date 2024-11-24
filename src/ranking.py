@@ -12,7 +12,7 @@ class RatingScore(BaseModel):
     relevance_score: float = Field(..., description="Điểm đánh giá độ liên quan của tài liệu với câu hỏi.")
 
 class DocumentRanker:
-    def __init__(self, model_name="cross-encoder/ms-marco-MiniLM-L-6-v2", pre_filter_k=5):
+    def __init__(self, model_name="cross-encoder/ms-marco-MiniLM-L-6-v2", pre_filter_k=10):
         logging.info(f"Initializing CrossEncoder with model: {model_name}")
         try:
             import torch
@@ -33,7 +33,7 @@ class DocumentRanker:
         tokenized_docs = [doc.page_content.lower().split() for doc in docs]
         return BM25Okapi(tokenized_docs)
 
-    def rerank_documents(self, query: str, docs: List[Document], top_n: int = 3) -> List[Document]:
+    def rerank_documents(self, query: str, docs: List[Document], top_n: int = 5) -> List[Document]:
         if len(docs) == 0:
             return []
 

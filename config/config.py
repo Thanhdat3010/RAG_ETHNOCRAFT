@@ -31,6 +31,7 @@ key_manager = APIKeyManager(GOOGLE_API_KEYS)
 DATA_ROOT = "data"  # Thư mục gốc chứa dữ liệu
 DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
     "SáchGiáoKhoaCTM",
+    "Chemgenie",
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"
