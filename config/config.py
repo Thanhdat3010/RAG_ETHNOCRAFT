@@ -32,6 +32,9 @@ DATA_ROOT = "data"  # Thư mục gốc chứa dữ liệu
 DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
     "SáchGiáoKhoaCTM",
     "Chemgenie",
+    "Sách SAT",
+    "Analytical Chemistry",
+    "Application Chemistry",
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"
