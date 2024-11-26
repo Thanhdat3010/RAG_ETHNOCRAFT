@@ -4,6 +4,7 @@ import hashlib
 from langchain_community.vectorstores import Chroma
 import logging
 from config.config import VECTOR_STORE_PATH, FILE_HASH_PATH, DATA_FOLDERS
+from .hybrid_retriever import HybridRetriever  # Thêm import
 # File này để lưu trữ và quản lý các tài liệu và vectors
 class DocumentStore:
     def __init__(self, embeddings):
@@ -46,7 +47,12 @@ class DocumentStore:
         )
 
     def get_retriever(self, k=5):
-        return self.vector_store.as_retriever(search_kwargs={"k": k})
+        """Return hybrid retriever thay vì Chroma retriever mặc định"""
+        return HybridRetriever(
+            vector_store=self.vector_store,
+            alpha=0.5,  # Có thể điều chỉnh
+            k=k
+        )
 
     def update_vectors(self, file_path: str, texts: list):
         try:
