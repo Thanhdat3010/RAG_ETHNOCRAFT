@@ -35,6 +35,13 @@ DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
     "Sách SAT",
     "Analytical Chemistry",
     "Application Chemistry",
+    "Biochemistry",
+    "Chromatography",
+    "Computational",
+    "Environmental Chemistry",
+    "Experimental Chemistry",
+    "Food Chemistry",
+    "General Chemistry",
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"
