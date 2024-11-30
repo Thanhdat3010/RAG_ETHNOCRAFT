@@ -42,6 +42,13 @@ DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
     "Experimental Chemistry",
     "Food Chemistry",
     "General Chemistry",
+    "Inorganic Chemistry",
+    "MDPI",
+    "Medicinal Chemistry",
+    "Microbiology",
+    "Nanotechnology",
+    "Organic Chemistry",
+    "Physical Chemistry",
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"
