@@ -3,6 +3,7 @@ from langchain_core.documents import Document
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 import numpy as np
+from concurrent.futures import ThreadPoolExecutor
 
 class HybridRetriever:
     def __init__(self, vector_store, alpha=0.5, k=5):
@@ -53,7 +54,7 @@ class HybridRetriever:
         vector_docs = [doc for doc, _ in vector_docs]
         
         # BM25 search với documents đầy đủ metadata
-        bm25_docs = self.bm25_retriever.get_relevant_documents(query)[:self.k]
+        bm25_docs = self.bm25_retriever.invoke(query)[:self.k]
         bm25_scores = self._normalize_scores(
             [doc.metadata.get("score", 0) for doc in bm25_docs]
         )
@@ -85,11 +86,18 @@ class HybridRetriever:
         return [(item["doc"], item["score"]) for item in sorted_docs]
 
     def map(self):
-        """Interface for RAG-Fusion"""
+        """Interface for RAG-Fusion with parallel processing"""
         def _map(queries):
-            results = []
-            for query in queries:
-                docs = self.get_relevant_documents(query)[:self.k]
-                results.append([doc for doc, _ in docs])
+            with ThreadPoolExecutor() as executor:
+                # Thực thi song song các truy vấn
+                future_results = [
+                    executor.submit(self.get_relevant_documents, query) 
+                    for query in queries
+                ]
+                # Thu thập kết quả
+                results = [
+                    [doc for doc, _ in future.result()[:self.k]]
+                    for future in future_results
+                ]
             return results
-        return _map 
+        return _map

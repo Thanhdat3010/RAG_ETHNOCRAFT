@@ -11,7 +11,6 @@ from .text_processor import DocumentProcessor
 from .document_store import DocumentStore
 from .ranking import DocumentRanker
 from .question_classifier import QuestionClassifier
-from .multi_query import MultiQueryRetriever
 from .rag_fusion import RAGFusionRetriever
 from config.config import DATA_FOLDERS
 
@@ -43,7 +42,6 @@ class ChemGenieBot:
         self.doc_store = DocumentStore(self.embeddings)
         self.ranker = DocumentRanker()
         self.question_classifier = QuestionClassifier(self.key_manager)
-        # self.multi_query = MultiQueryRetriever(self.key_manager)
         self.rag_fusion = RAGFusionRetriever(self.key_manager)
 
     def load_and_process_documents(self):

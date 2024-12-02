@@ -227,8 +227,10 @@ class ChemistryExamGenerator:
         Yêu cầu cho từng loại câu hỏi:
         - Trắc nghiệm: 4 lựa chọn, 1 đáp án đúng và giải thích chi tiết
         - Đúng/sai: 4 phát biểu liên kết, có câu dẫn, phát biểu cuối khó nhất
+        + Lưu ý: số câu hỏi đúng sai khi người dùng nhập là 4 thì phải tạo đủ 4 câu hỏi và mỗi câu 4 phát biểu chứ không phải 1 câu hỏi.
         - Trả lời ngắn: chỉ tạo câu hỏi tính toán và có đáp án ngắn gọn (không có chữ), không dùng dạng toán đốt cháy.
-
+        Lưu ý: không reset Số thứ tự qua các phần.
+        
         Định dạng câu trả lời:
         PHẦN I. CÂU HỎI TRẮC NGHIỆM
         [Số thứ tự]. [Nội dung câu hỏi]
