@@ -21,6 +21,7 @@ GOOGLE_API_KEYS = [
     "AIzaSyCdm8-0p8SQREhPDicyywkDeDbMVtMmhNo",
     "AIzaSyBc1fHj2tGSwmVraM39ZXzFjvy_qubMct8",
     "AIzaSyAwokgee5qqhev3eZaQ3dhqXN23UrLHpNo",
+    "AIzaSyBNIoGntqsjY0ElbfrJmlBHYLep0QbYOAo",
 
 ]
 
@@ -49,6 +50,12 @@ DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
     "Nanotechnology",
     "Organic Chemistry",
     "Physical Chemistry",
+    "Quantum Mechanics",
+    "Sách khác",
+    "ScienceDirect",
+    "Spectroscopy",
+    "VietNam_Journal_Of_Chemistry",
+
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"

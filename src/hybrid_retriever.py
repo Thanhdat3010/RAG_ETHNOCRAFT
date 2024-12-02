@@ -89,7 +89,7 @@ class HybridRetriever:
         def _map(queries):
             results = []
             for query in queries:
-                docs = self.get_relevant_documents(query)
+                docs = self.get_relevant_documents(query)[:self.k]
                 results.append([doc for doc, _ in docs])
             return results
         return _map 

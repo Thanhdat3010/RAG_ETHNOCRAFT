@@ -14,13 +14,14 @@ class RAGFusionRetriever:
             temperature=0
         )
         
-        # RAG-Fusion: Related
+        # RAG-Fusion: Related - Hỗ trợ đa ngôn ngữ
         self.query_prompt = ChatPromptTemplate.from_template(
-            """You are a helpful assistant that generates multiple search queries based on a single input query.
+            """You are a helpful bilingual assistant that generates multiple search queries based on a single input query. 
+            Generate queries in both Vietnamese and English regardless of the input language.
 
-                Generate multiple search queries related to: {question}
+            Generate multiple search queries related to: {question}
 
-                Output (4 queries):"""
+            Output (4 queries, keep chemical terms unchanged in both languages):"""
         )
 
         # Tạo chain để generate queries
@@ -30,18 +31,6 @@ class RAGFusionRetriever:
             | StrOutputParser() 
             | (lambda x: x.split("\n"))
         )
-
-    def translate_query(self, question: str) -> str:
-        """Dịch câu hỏi sang tiếng Anh, giữ nguyên các thuật ngữ hóa học"""
-        translate_prompt = """Translate this chemistry question to English. 
-        Keep all chemical formulas, IUPAC names, and technical terms unchanged.
-        
-        Question: {question}
-        
-        English translation:"""
-        
-        english_query = self.llm.invoke(translate_prompt.format(question=question))
-        return english_query
 
     def reciprocal_rank_fusion(self, results: list[list], k=60):
         """ Reciprocal_rank_fusion that takes multiple lists of ranked documents 
@@ -55,29 +44,24 @@ class RAGFusionRetriever:
                 if doc_str not in fused_scores:
                     fused_scores[doc_str] = 0
                 previous_score = fused_scores[doc_str]
-                # Update the score of the document using the RRF formula: 1 / (rank + k)
                 fused_scores[doc_str] += 1 / (rank + k)
 
         reranked_results = [
-            (loads(doc), score)  # Trả về tuple (document, score)
+            (loads(doc), score)
             for doc, score in sorted(fused_scores.items(), key=lambda x: x[1], reverse=True)
         ]
 
-        # Return the reranked results as a list of tuples
         return reranked_results
 
     def retrieve(self, question: str, retriever) -> List[tuple]:
-        """Thực hiện RAG-Fusion retrieval"""
+        """Thực hiện RAG-Fusion retrieval với hỗ trợ đa ngôn ngữ"""
         # Cập nhật key mới trước khi gọi API
         self.llm.google_api_key = self.key_manager.get_api_key()
         
-        # Translate query first
-        english_question = self.translate_query(question)
-        
-        # Use translated query for retrieval
+        # Sử dụng trực tiếp câu hỏi gốc
         retrieval_chain = (
-            self.generate_queries  # This will now work with English query
+            self.generate_queries
             | retriever.map()
             | self.reciprocal_rank_fusion
         )
-        return retrieval_chain.invoke({"question": english_question}) 
+        return retrieval_chain.invoke({"question": question}) 
