@@ -44,17 +44,26 @@ class HybridRetriever:
     def get_relevant_documents(
         self, query: str, callbacks: CallbackManagerForRetrieverRun = None
     ) -> List[Document]:
-        """Hybrid search kết hợp BM25 và vector similarity"""
+        """Hybrid search kết hợp BM25 và vector similarity chạy song song"""
         
-        # Vector search
-        vector_docs = self.vector_store.similarity_search_with_relevance_scores(
-            query, k=self.k
-        )
+        # Chạy song song vector search và BM25 search
+        with ThreadPoolExecutor() as executor:
+            vector_future = executor.submit(
+                self.vector_store.similarity_search_with_relevance_scores,
+                query, self.k
+            )
+            bm25_future = executor.submit(
+                self.bm25_retriever.invoke,
+                query
+            )
+            
+            # Lấy kết quả
+            vector_docs = vector_future.result()
+            bm25_docs = bm25_future.result()[:self.k]
+        
+        # Chuẩn hóa scores
         vector_scores = self._normalize_scores([score for _, score in vector_docs])
         vector_docs = [doc for doc, _ in vector_docs]
-        
-        # BM25 search với documents đầy đủ metadata
-        bm25_docs = self.bm25_retriever.invoke(query)[:self.k]
         bm25_scores = self._normalize_scores(
             [doc.metadata.get("score", 0) for doc in bm25_docs]
         )
