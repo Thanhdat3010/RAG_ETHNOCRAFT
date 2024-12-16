@@ -11,7 +11,7 @@ from .text_processor import DocumentProcessor
 from .document_store import DocumentStore
 from .ranking import DocumentRanker
 from .question_classifier import QuestionClassifier
-from .rag_fusion import RAGFusionRetriever
+from .multi_query import MultiQueryRetriever
 from config.config import DATA_FOLDERS
 
 class ChemGenieBot:
@@ -42,7 +42,7 @@ class ChemGenieBot:
         self.doc_store = DocumentStore(self.embeddings)
         self.ranker = DocumentRanker()
         self.question_classifier = QuestionClassifier(self.key_manager)
-        self.rag_fusion = RAGFusionRetriever(self.key_manager)
+        self.query_retriever = MultiQueryRetriever(self.key_manager)
 
     def load_and_process_documents(self):
         logging.info("Bắt đầu quá trình đọc tài liệu...")
@@ -194,6 +194,7 @@ class ChemGenieBot:
         try:
             # Cập nhật API key mới cho model trước khi xử lý
             self.model.google_api_key = self.key_manager.get_api_key()
+            
             # Phân loại câu hỏi
             if self.question_classifier.is_conversational(question):
                 logging.info("Phát hiện câu hỏi giao tiếp, sử dụng LLM trực tiếp")
@@ -201,10 +202,9 @@ class ChemGenieBot:
             
             # Xử lý câu hỏi chuyên môn bằng RAG
             logging.info("Đang tìm kiếm tài liệu liên quan...")
-    
-            doc_scores = self.rag_fusion.retrieve(question, self.vector_index)
-    # Chỉ lấy documents (bỏ scores)
-            retrieved_docs = [doc for doc, score in doc_scores]   
+
+            # Thay đổi ở đây: retrieved_docs đã là List[Document] rồi, không cần xử lý tuple nữa
+            retrieved_docs = self.query_retriever.retrieve(question, self.vector_index)
             logging.info(f"Tìm thấy {len(retrieved_docs)} tài liệu liên quan")
             
             logging.info("Bắt đầu rerank tài liệu...")
@@ -214,6 +214,7 @@ class ChemGenieBot:
             # Xử lý và làm sạch ngữ cảnh
             contexts = [self.clean_context(doc.page_content) for doc in reranked_docs]
             context = "\n\n".join(contexts)
+            
             logging.info("Đang tạo câu trả lời...")
             prompt = {
                 "context": context,
