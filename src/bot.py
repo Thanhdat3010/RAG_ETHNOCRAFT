@@ -14,7 +14,7 @@ from .question_classifier import QuestionClassifier
 from .multi_query import MultiQueryRetriever
 from config.config import DATA_FOLDERS
 
-class ChemGenieBot:
+class EthnoAI:
     def __init__(self, key_manager, data_root):
         logging.info("Đang khởi tạo ChemGenieBot...")
         self.key_manager = key_manager
@@ -79,70 +79,15 @@ class ChemGenieBot:
         logging.info("Hoàn tất quá trình đọc và xử lý tài liệu")
 
     def setup_qa_chain(self):
-        template = """Bạn là Chemgenie chatbot AI, một chatbot hỗ trợ hóa học.
+        template = """Bạn là một chatbot AI chuyên về các dân tộc thiểu số Việt Nam.
 
-            Sử dụng các đoạn ngữ cảnh dưới đây để trả lời câu hỏi. Nếu thông tin cần thiết không có trong ngữ cảnh, hãy trả lời rằng bạn không biết. **Không tạo ra câu trả lời ngoài tài liệu cung cấp.**
-            Tuy nhiên nếu câu hỏi là cân bằng phương trình thì khỏi cần dựa vào ngữ cảnh mà tự trả lời.
-            Ngữ cảnh có thể bằng tiếng Anh hoặc tiếng Việt.
+        Sử dụng các đoạn ngữ cảnh dưới đây để trả lời câu hỏi. Nếu thông tin không có trong ngữ cảnh, hãy trả lời rằng bạn không biết.
 
-            {context}
+        {context}
 
-            Câu hỏi: {question}
+        Câu hỏi: {question}
 
-            Quy tắc định dạng:
-            1. Đảm bảo tất cả công thức hóa học sử dụng ký hiệu chỉ số dưới đúng (ví dụ: viết CH₄ thay vì CH4)
-            2. Sử dụng → cho mũi tên phản ứng (thay vì ->)
-            3. Sử dụng ⇌ cho phản ứng thuận nghịch (thay vì <->)
-            4. Định dạng câu trả lời với khoảng cách và ngắt dòng phù hợp:
-            - Sử dụng ngắt dòng kép giữa các đoạn văn
-            - Sử dụng dấu chấm đầu dòng (•) cho danh sách
-            - Sử dụng in đậm (**) cho các thuật ngữ hoặc khái niệm quan trọng
-            - Sử dụng thụt lề phù hợp cho phương trình hóa học
-           
-            Quy tắc xử lý phương trình hóa học:
-            1. Nếu câu hỏi liên quan đến phương trình hóa học, hãy:
-               - Tự động cân bằng phương trình
-               - Viết rõ hệ số trước mỗi chất (hệ số 1 có thể bỏ qua)
-               - Giải thích ý nghĩa của phương trình nếu cần
-            2. Nếu chỉ có chất tham gia phản ứng, hãy:
-               - Dự đoán sản phẩm dựa trên kiến thức hóa học
-               - Cân bằng phương trình hoàn chỉnh
-               - Giải thích cơ chế phản ứng
-            
-            Quy tắc trả lời:
-            1. **Chỉ trả lời trong giới hạn tài liệu cung cấp**:
-            - Nếu câu trả lời không có trong ngữ cảnh, hãy trả lời: "Tôi không tìm thấy thông tin trong tài liệu cung cấp để trả lời câu hỏi này."
-            2. Trả lời bằng tiếng Việt rõ ràng, dễ hiểu.
-            3. **Giữ nguyên danh pháp hóa học và các thuật ngữ chuyên ngành giống trong ngữ cảnh**:
-            - Không dịch hoặc thay đổi danh pháp hóa học (bao gồm tên tiếng Anh hoặc IUPAC).
-            - Nếu ngữ cảnh bằng tiếng Anh, hãy dịch sang tiếng Việt nhưng giữ nguyên danh pháp hóa học giống trong ngữ cảnh(tiếng anh).
-            - **TUYỆT ĐỐI KHÔNG DỊCH tên các chất hoá học**:
-            - Giữ nguyên 100% tên gọi của các chất hoá học như trong ngữ cảnh
-            - Ví dụ: nếu ngữ cảnh viết "phosphoric acid" thì PHẢI giữ nguyên là "phosphoric acid", KHÔNG được dịch thành "axit photphoric"
-            **Bổ sung:**
-            1. **Ví dụ minh họa**: Nếu cần, hãy bổ sung ví dụ cụ thể để định dạng câu trả lời chuẩn hơn.
-            2. **Ràng buộc ngữ cảnh mạnh mẽ hơn**: Chỉ sử dụng thông tin có trong {context}, không phỏng đoán hoặc sáng tạo.
-            3. Nếu tài liệu thiếu thông tin, trả lời rõ ràng rằng: "Tôi không có đủ dữ liệu để trả lời câu hỏi này trong phạm vi ngữ cảnh được cung cấp."
-
-            ---
-
-            **Ví dụ minh họa**:  
-
-            Ngữ cảnh:  
-            "The reaction involves sodium chloride (NaCl) and hydrochloric acid (HCl), producing sodium bisulfate (NaHSO₄)."  
-
-            Câu hỏi:  
-            "Phương trình hóa học của phản ứng này là gì?"  
-            
-            Cách dịch ngữ cảnh:
-            "Phản ứng liên quan đến sodium chlorine (NaCl) và hydrochloric acid (HCl), tạo ra sodium bisulfate (NaHSO₄)."  
-            
-            Câu trả lời:  
-            Phương trình hóa học của phản ứng này là:  
-
-            NaCl + HCl → NaHSO₄
-
-            Câu trả lời hữu ích:"""
+        Câu trả lời:"""
         
         prompt = PromptTemplate.from_template(template)
         

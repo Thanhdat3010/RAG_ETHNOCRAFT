@@ -31,31 +31,7 @@ key_manager = APIKeyManager(GOOGLE_API_KEYS)
 # Thay đổi cấu trúc thư mục
 DATA_ROOT = "data"  # Thư mục gốc chứa dữ liệu
 DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
-    "SáchGiáoKhoaCTM",
-    "Chemgenie",
-    "Sách SAT",
-    "Analytical Chemistry",
-    "Application Chemistry",
-    "Biochemistry",
-    "Chromatography",
-    "Computational",
-    "Environmental Chemistry",
-    "Experimental Chemistry",
-    "Food Chemistry",
-    "General Chemistry",
-    "Inorganic Chemistry",
-    "MDPI",
-    "Medicinal Chemistry",
-    "Microbiology",
-    "Nanotechnology",
-    "Organic Chemistry",
-    "Physical Chemistry",
-    "Quantum Mechanics",
-    "Sách khác",
-    "ScienceDirect",
-    "Spectroscopy",
-    "VietNam_Journal_Of_Chemistry",
-
+    "DANTOCTHIEUSO",
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"

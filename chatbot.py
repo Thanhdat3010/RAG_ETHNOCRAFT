@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import logging
 import json
-from src.bot import ChemGenieBot
+from src.bot import EthnoAI
 from config.config import key_manager, DATA_ROOT
 import warnings
 
@@ -23,7 +23,7 @@ logging.basicConfig(
 app = Flask(__name__)
 CORS(app)
 
-bot = ChemGenieBot(key_manager, DATA_ROOT)
+bot = EthnoAI(key_manager, DATA_ROOT)
 
 @app.route('/chat', methods=['POST'])
 def chat():

@@ -34,7 +34,7 @@ class QuestionClassifier:
         Câu hỏi: {question}"""
     
     def default_conversation_prompt(self):
-        return """Bạn là một trợ lý hóa học Chemgenie AI thân thiện. Hãy trả lời câu hỏi sau một cách ngắn gọn và thân thiện:
+        return """Bạn là một trợ lý BVAI(Bách VIệt AI) thân thiện. Hãy trả lời câu hỏi sau một cách ngắn gọn và thân thiện:
 
         {question}"""
     
