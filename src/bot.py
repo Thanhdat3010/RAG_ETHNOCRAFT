@@ -13,6 +13,7 @@ from .ranking import DocumentRanker
 from .question_classifier import QuestionClassifier
 from .multi_query import MultiQueryRetriever
 from config.config import DATA_FOLDERS
+from .reflection import ReflectionEngine
 
 class EthnoAI:
     def __init__(self, key_manager, data_root):
@@ -23,6 +24,7 @@ class EthnoAI:
         self.setup_components()
         self.load_and_process_documents()
         self.setup_qa_chain()
+        self.reflection_engine = ReflectionEngine(key_manager)
 
     def setup_model(self):
         api_key = self.key_manager.get_api_key()
@@ -79,13 +81,19 @@ class EthnoAI:
         logging.info("Hoàn tất quá trình đọc và xử lý tài liệu")
 
     def setup_qa_chain(self):
-        template = """Bạn là một chatbot AI chuyên về các dân tộc thiểu số Việt Nam.
+        template = """Bạn là một chatbot AI chuyên về các dân tộc thiểu số Việt Nam. Hãy trả lời một cách chính xác, ngắn gọn và dễ hiểu.
 
-        Sử dụng các đoạn ngữ cảnh dưới đây để trả lời câu hỏi. Nếu thông tin không có trong ngữ cảnh, hãy trả lời rằng bạn không biết.
-
+        Dựa trên các thông tin được cung cấp dưới đây:
         {context}
 
-        Câu hỏi: {question}
+        Hãy trả lời câu hỏi sau: {question}
+
+        Hướng dẫn:
+        - Chỉ sử dụng thông tin từ ngữ cảnh được cung cấp
+        - Nếu thông tin trong ngữ cảnh không đủ để trả lời, hãy nói "Tôi không có đủ thông tin để trả lời câu hỏi này"
+        - Không được tự tạo thêm thông tin
+        - Trả lời bằng giọng điệu thân thiện, tôn trọng
+        - Ngữ cảnh(tài liệu) đó cứ coi là kiến thức của bạn, không được đề cập là "dựa vào tài liệu cung cấp" mà chỉ trả lời câu hỏi của người dùng một cách vui vẻ và thân thiện
 
         Câu trả lời:"""
         
@@ -143,17 +151,21 @@ class EthnoAI:
             # Phân loại câu hỏi
             if self.question_classifier.is_conversational(question):
                 logging.info("Phát hiện câu hỏi giao tiếp, sử dụng LLM trực tiếp")
-                return self.question_classifier.get_conversation_response(question)
+                response = self.question_classifier.get_conversation_response(question)
+                self.reflection_engine.add_to_history(question, response)
+                return response
             
-            # Xử lý câu hỏi chuyên môn bằng RAG
-            logging.info("Đang tìm kiếm tài liệu liên quan...")
+            # Sử dụng reflection để tạo câu query mới
+            reflected_question = self.reflection_engine.generate_reflected_query(question)
+            logging.info(f"Câu hỏi sau khi reflection: {reflected_question}")
 
-            # Thay đổi ở đây: retrieved_docs đã là List[Document] rồi, không cần xử lý tuple nữa
-            retrieved_docs = self.query_retriever.retrieve(question, self.vector_index)
+            # Xử lý câu hỏi chuyên môn bằng RAG với câu query đã được reflection
+            logging.info("Đang tìm kiếm tài liệu liên quan...")
+            retrieved_docs = self.query_retriever.retrieve(reflected_question, self.vector_index)
             logging.info(f"Tìm thấy {len(retrieved_docs)} tài liệu liên quan")
             
             logging.info("Bắt đầu rerank tài liệu...")
-            reranked_docs = self.ranker.rerank_documents(question, retrieved_docs)
+            reranked_docs = self.ranker.rerank_documents(reflected_question, retrieved_docs)
             logging.info("Hoàn thành rerank tài liệu")
             
             # Xử lý và làm sạch ngữ cảnh
@@ -163,18 +175,21 @@ class EthnoAI:
             logging.info("Đang tạo câu trả lời...")
             prompt = {
                 "context": context,
-                "question": question
+                "question": reflected_question
             }
             print("=== PROMPT ===")
             print(prompt)
             print("=============")
             
-            answer = self.qa_chain.invoke({"context": context, "question": question})
+            answer = self.qa_chain.invoke({"context": context, "question": reflected_question})
             
             if not answer or answer.strip() == "":
                 logging.warning("Không thể tạo câu trả lời")
                 return "Xin lỗi, tôi không thể tạo câu trả lời. Vui lòng thử lại."
             
+            if answer and answer.strip() != "":
+                self.reflection_engine.add_to_history(question, answer)
+                
             logging.info("Đã tạo xong câu trả lời")
             return answer
             

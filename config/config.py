@@ -32,6 +32,10 @@ key_manager = APIKeyManager(GOOGLE_API_KEYS)
 DATA_ROOT = "data"  # Thư mục gốc chứa dữ liệu
 DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
     "DANTOCTHIEUSO",
+    "Dân tộc-Thông tin bổ sung",
+    "LUẬN ÁN DÂN TỘC",
+    "QTH B ca sang T5",
+    "Dữ liệu mới",
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"

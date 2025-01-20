@@ -16,12 +16,13 @@ class MultiQueryRetriever:
         
         # RAG-Fusion: Related - Hỗ trợ đa ngôn ngữ
         self.query_prompt = ChatPromptTemplate.from_template(
-            """You are a helpful bilingual assistant that generates multiple search queries based on a single input query. 
-            Generate queries in both Vietnamese and English regardless of the input language.
+            """Bạn là trợ lý giúp tạo ra nhiều câu truy vấn tìm kiếm bằng tiếng Việt từ một câu hỏi đầu vào.
+            Hãy tạo các câu truy vấn bằng tiếng Việt, không phân biệt ngôn ngữ đầu vào là gì.
+            Giữ nguyên các tên riêng và thuật ngữ về dân tộc.
 
-            Generate multiple search queries related to: {question}
+            Tạo các câu truy vấn liên quan đến: {question}
 
-            Output (4 queries, keep chemical terms unchanged in both languages):"""
+            Output (4 câu truy vấn bằng tiếng Việt):"""
         )
 
         # Tạo chain để generate queries và thêm câu hỏi gốc

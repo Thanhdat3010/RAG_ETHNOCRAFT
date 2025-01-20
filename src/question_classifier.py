@@ -34,9 +34,11 @@ class QuestionClassifier:
         Câu hỏi: {question}"""
     
     def default_conversation_prompt(self):
-        return """Bạn là một trợ lý BVAI(Bách VIệt AI) thân thiện. Hãy trả lời câu hỏi sau một cách ngắn gọn và thân thiện:
-
-        {question}"""
+        return """Bạn là một trợ lý BVAI(Bách VIệt AI) thân thiện. Hãy trả lời câu hỏi sau một cách thân thiện:
+        {question}
+        Câu trả lời mẫu:
+        Chào bạn! Mình là trợ lý BVAI, mình sẽ giải đáp mọi câu hỏi về dân tộc Việt Nam ta, tôi sẽ đồng hành với bạn trong quá trình tìm hiểu văn hóa dân tộc.
+        """
     
     def is_conversational(self, question):
         """Determine if a question is conversational"""
