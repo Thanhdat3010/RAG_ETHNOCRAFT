@@ -153,6 +153,7 @@ class EthnoAI:
                 logging.info("Phát hiện câu hỏi giao tiếp, sử dụng LLM trực tiếp")
                 response = self.question_classifier.get_conversation_response(question)
                 self.reflection_engine.add_to_history(question, response)
+                self.question_classifier.add_to_history(question, response)
                 return response
             
             # Sử dụng reflection để tạo câu query mới
@@ -189,6 +190,7 @@ class EthnoAI:
             
             if answer and answer.strip() != "":
                 self.reflection_engine.add_to_history(question, answer)
+                self.question_classifier.add_to_history(question, answer)
                 
             logging.info("Đã tạo xong câu trả lời")
             return answer

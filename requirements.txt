@@ -1,11 +1,28 @@
-flask==2.0.1
-flask-cors==3.0.10
-google-generativeai==0.3.1
+# FastAPI và server dependencies
+fastapi==0.109.1
+uvicorn==0.27.0
+python-multipart==0.0.9
+python-dotenv==1.0.0
+
+# LangChain và các module liên quan
 langchain==0.1.0
-langchain-google-genai==0.0.5
-chromadb==0.4.18
+langchain-community==0.0.24
+langchain-core==0.1.27
+
+# Document processing
 unstructured==0.10.30
 python-docx==0.8.11
+pypdf2==3.0.1
 python-magic==0.4.27
 pdfminer.six==20221105
+
+# Google Generative AI
+google-generativeai==0.3.1
+langchain-google-genai==0.0.5
+
+# Utilities
 pydantic==2.5.2
+regex==2023.12.25
+
+# Chromadb cho vector store (nếu bạn dùng)
+chromadb==0.4.18
