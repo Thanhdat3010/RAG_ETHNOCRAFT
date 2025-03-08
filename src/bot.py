@@ -14,6 +14,8 @@ from .question_classifier import QuestionClassifier
 from .multi_query import MultiQueryRetriever
 from config.config import DATA_FOLDERS
 from .reflection import ReflectionEngine
+from typing import Dict
+from .deep_reasoning import DeepReasoning
 
 class EthnoAI:
     def __init__(self, key_manager, data_root):
@@ -25,6 +27,7 @@ class EthnoAI:
         self.load_and_process_documents()
         self.setup_qa_chain()
         self.reflection_engine = ReflectionEngine(key_manager)
+        self.deep_reasoning = DeepReasoning(key_manager)
 
     def setup_model(self):
         api_key = self.key_manager.get_api_key()
@@ -198,3 +201,30 @@ class EthnoAI:
         except Exception as e:
             logging.error(f"Lỗi khi xử lý câu hỏi: {str(e)}")
             return "Đã xảy ra lỗi khi xử lý câu hỏi của bạn. Vui lòng thử lại."
+
+    def deep_think(self, question: str) -> Dict:
+        """
+        Kích hoạt chế độ suy luận sâu và trả về từng bước suy nghĩ
+        """
+        try:
+            # Lấy context từ vector store
+            retrieved_docs = self.query_retriever.retrieve(question, self.vector_index)
+            reranked_docs = self.ranker.rerank_documents(question, retrieved_docs)
+            contexts = [self.clean_context(doc.page_content) for doc in reranked_docs]
+            context = "\n\n".join(contexts)
+
+            # Thực hiện suy luận sâu
+            result = self.deep_reasoning.deep_think(question, context)
+            
+            return {
+                "status": "success",
+                "thinking_process": result["thoughts"],
+                "final_answer": result["final_answer"]
+            }
+            
+        except Exception as e:
+            logging.error(f"Lỗi trong quá trình suy luận sâu: {str(e)}")
+            return {
+                "status": "error",
+                "error_message": str(e)
+            }

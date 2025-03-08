@@ -37,6 +37,8 @@ DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
     "QTH B ca sang T5",
     "Dữ liệu mới",
     "Học tiếng dân tộc Khmer",
+    "Bài báo Dân tộc thiểu số",
+    "THI CUỐI KÌ",
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"
