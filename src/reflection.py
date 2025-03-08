@@ -33,7 +33,7 @@ class ReflectionEngine:
 
         prompt = f"""Dựa vào lịch sử hội thoại sau và câu hỏi hiện tại, hãy tạo một câu query mới 
         để tìm kiếm thông tin chính xác hơn. Chỉ trả về câu query mới, không cần giải thích.
-
+        Nếu không có lịch sử, hãy giữ nguyên câu hỏi của người dùng.
         Lịch sử hội thoại:
         {self._format_history()}
 

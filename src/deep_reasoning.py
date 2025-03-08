@@ -33,29 +33,30 @@ class DeepReasoning:
                 "final_answer": "Tôi không có đủ thông tin để trả lời câu hỏi này."
             }
 
-        # Bước 0: Kiểm tra độ liên quan của context
+        # Log the context for debugging
+        logging.info(f"Ngữ cảnh: {context}")
+
+        # Sử dụng một prompt duy nhất để kiểm tra độ liên quan
         relevance_prompt = f"""Dựa trên context sau:
         {context}
         
-        Hãy phân tích xem context có chứa đủ thông tin để trả lời câu hỏi: "{question}" không?
-        
-        CHÚ Ý:
-        - Chỉ trả lời YES nếu context chứa thông tin trực tiếp hoặc có thể suy luận hợp lý từ thông tin có sẵn
-        - Trả lời NO nếu context không chứa đủ thông tin liên quan
-        - Chỉ trả lời YES hoặc NO"""
+        Hãy cho biết liệu context có chứa đủ thông tin để trả lời câu hỏi: "{question}" không? 
+        Nếu không, hãy trả lời "Tôi không biết".
+        CHÚ Ý: Chỉ trả lời "CÓ" hoặc "TÔI KHÔNG BIẾT"."""
 
         has_relevant_info = self._get_llm_response(relevance_prompt).strip().upper()
         
-        if has_relevant_info != "YES":
+        if has_relevant_info == "TÔI KHÔNG BIẾT":
             return {
                 "thoughts": [{
                     "step": "Kiểm tra độ liên quan",
                     "thought": "🔍 Đang đánh giá thông tin...",
-                    "content": "Context không chứa đủ thông tin liên quan để trả lời câu hỏi này."
+                    "content": "Tôi không có đủ thông tin để trả lời câu hỏi này."
                 }],
-                "final_answer": "Tôi không có đủ thông tin để trả lời câu hỏi này."
+                "final_answer": "Tôi là một chatbot AI về dân tộc, tôi không có thông tin để trả lời câu hỏi này."
             }
 
+        # Nếu có thông tin liên quan, tiếp tục phân tích
         thoughts = []
         
         # Bước 1: Phân tích tổng hợp
@@ -85,7 +86,7 @@ class DeepReasoning:
         Hãy đưa ra câu trả lời cho câu hỏi: "{question}"
         
         YÊU CẦU:
-        - Trả lời ngắn gọn, súc tích
+        - Trả lời đầy đủ thông tin
         - Đưa ra kết luận rõ ràng, chắc chắn
         - Tập trung vào những điểm chính đã phân tích"""
 
