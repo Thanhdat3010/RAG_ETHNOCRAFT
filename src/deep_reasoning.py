@@ -75,7 +75,7 @@ class DeepReasoning:
         analysis = self._get_llm_response(analysis_prompt)
         thoughts.append({
             "step": "Phân tích tổng hợp",
-            "thought": "🔍 Đang phân tích và kết nối thông tin...",
+            "thought": "🌟 Đang phân tích và kết nối thông tin...",
             "content": analysis
         })
 
