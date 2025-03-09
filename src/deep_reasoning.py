@@ -12,7 +12,7 @@ class DeepReasoning:
     def setup_model(self):
         api_key = self.key_manager.get_api_key()
         self.model = ChatGoogleGenerativeAI(
-            model="gemini-1.5-pro",
+            model="gemini-2.0-flash",
             google_api_key=api_key,
             temperature=0.1,
             max_output_tokens=2048,
@@ -37,10 +37,10 @@ class DeepReasoning:
         logging.info(f"Ngữ cảnh: {context}")
 
         # Sử dụng một prompt duy nhất để kiểm tra độ liên quan
-        relevance_prompt = f"""Dựa trên context sau:
+        relevance_prompt = f"""Dựa trên thông tin sau:
         {context}
         
-        Hãy cho biết liệu context có chứa đủ thông tin để trả lời câu hỏi: "{question}" không? 
+        Hãy cho biết liệu có chứa đủ thông tin để trả lời câu hỏi: "{question}" không? 
         Nếu không, hãy trả lời "Tôi không biết".
         CHÚ Ý: Chỉ trả lời "CÓ" hoặc "TÔI KHÔNG BIẾT"."""
 
@@ -60,7 +60,7 @@ class DeepReasoning:
         thoughts = []
         
         # Bước 1: Phân tích tổng hợp
-        analysis_prompt = f"""Dựa trên context sau:
+        analysis_prompt = f"""Dựa trên thông tin sau:
         {context}
         
         1. Phân tích câu hỏi: "{question}"
@@ -70,7 +70,7 @@ class DeepReasoning:
 
         Hãy suy luận một cách logic và khách quan.
         
-        CHÚ Ý: Chỉ sử dụng thông tin từ context được cung cấp."""
+        CHÚ Ý: Chỉ sử dụng thông tin được cung cấp."""
 
         analysis = self._get_llm_response(analysis_prompt)
         thoughts.append({
@@ -88,7 +88,9 @@ class DeepReasoning:
         YÊU CẦU:
         - Trả lời đầy đủ thông tin
         - Đưa ra kết luận rõ ràng, chắc chắn
-        - Tập trung vào những điểm chính đã phân tích"""
+        - Tập trung vào những điểm chính đã phân tích
+        - Chỉ trả lời thông tin, không đề cập đến context
+        """
 
         final_answer = self._get_llm_response(conclusion_prompt)
         
