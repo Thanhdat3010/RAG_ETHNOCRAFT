@@ -16,6 +16,7 @@ from config.config import DATA_FOLDERS
 from .reflection import ReflectionEngine
 from typing import Dict
 from .deep_reasoning import DeepReasoning
+from .cultural_research_agent import CulturalResearchAgent  # Nhập lớp CulturalResearchAgent
 
 class EthnoAI:
     def __init__(self, key_manager, data_root):
@@ -48,6 +49,7 @@ class EthnoAI:
         self.ranker = DocumentRanker()
         self.question_classifier = QuestionClassifier(self.key_manager)
         self.query_retriever = MultiQueryRetriever(self.key_manager)
+        self.cultural_research_agent = CulturalResearchAgent()  # Khởi tạo CulturalResearchAgent
 
     def load_and_process_documents(self):
         logging.info("Bắt đầu quá trình đọc tài liệu...")
@@ -148,6 +150,15 @@ class EthnoAI:
     def ask_question(self, question):
         logging.info(f"Nhận được câu hỏi: {question}")
         try:
+            if "báo cáo" in question:  # Kiểm tra xem câu hỏi có liên quan đến nghiên cứu không
+                logging.info("Chuyển câu hỏi đến CulturalResearchAgent")
+                
+                # Lấy kết quả từ RAG
+                retrieved_docs = self.query_retriever.retrieve(question, self.vector_index)
+                reranked_docs = self.ranker.rerank_documents(question, retrieved_docs)  # Rerank tài liệu
+                
+                # Gọi phương thức tạo báo cáo với kết quả từ RAG
+                return self.cultural_research_agent.generate_report(question, reranked_docs)  
             # Cập nhật API key mới cho model trước khi xử lý
             self.model.google_api_key = self.key_manager.get_api_key()
             
