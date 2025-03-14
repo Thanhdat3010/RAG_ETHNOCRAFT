@@ -6,7 +6,7 @@ class QuestionClassifier:
     def __init__(self, key_manager):
         self.key_manager = key_manager
         self.classifier = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model="gemini-2.0-flash",
             google_api_key=self.key_manager.get_api_key(),
             temperature=0
         )

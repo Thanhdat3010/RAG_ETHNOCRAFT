@@ -11,7 +11,7 @@ class ReflectionEngine:
     def setup_model(self):
         """Khởi tạo model để xử lý reflection"""
         self.model = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model="gemini-2.0-flash",
             google_api_key=self.key_manager.get_api_key(),
             temperature=0.2,
         )
