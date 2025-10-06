@@ -53,11 +53,11 @@ def deep_think():
         def generate_thinking_steps():
             try:
                 # Bước 0: Khởi động suy nghĩ
-                yield f"data: {json.dumps({'type': 'thinking', 'content': '🧠 Bắt đầu quá trình suy nghĩ sâu...\n\nTôi sẽ:\n1. Tìm kiếm thông tin liên quan\n2. Phân tích tổng hợp\n3. Đưa ra kết luận'}, ensure_ascii=False)}\n\n"
-                time.sleep(1.5)
-
-                # Bước 1: Tìm kiếm thông tin
-                yield f"data: {json.dumps({'type': 'thinking', 'content': '🔍 Đang tìm kiếm trong cơ sở dữ liệu...'}, ensure_ascii=False)}\n\n"
+                content = {
+                    'type': 'thinking',
+                    'content': '🧠 Bắt đầu quá trình suy nghĩ sâu...\n\nTôi sẽ:\n1. Tìm kiếm thông tin liên quan\n2. Phân tích tổng hợp\n3. Đưa ra kết luận'
+                }
+                yield f"data: {json.dumps(content, ensure_ascii=False)}\n\n"
                 retrieved_docs = bot.query_retriever.retrieve(message, bot.vector_index)
                 reranked_docs = bot.ranker.rerank_documents(message, retrieved_docs)
                 contexts = [bot.clean_context(doc.page_content) for doc in reranked_docs]
@@ -104,4 +104,4 @@ def deep_think():
 
 if __name__ == "__main__":
     logging.info("Đang khởi động ứng dụng ChemGenie Bot...")
-    app.run(debug=True)
+    app.run(debug=False)

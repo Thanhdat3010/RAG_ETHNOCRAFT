@@ -18,7 +18,7 @@ class APIKeyManager:
 
 # List các API keys
 GOOGLE_API_KEYS = [
-    "AIzaSyCdm8-0p8SQREhPDicyywkDeDbMVtMmhNo",
+    # "AIzaSyCdm8-0p8SQREhPDicyywkDeDbMVtMmhNo",
     "AIzaSyBc1fHj2tGSwmVraM39ZXzFjvy_qubMct8",
     "AIzaSyAwokgee5qqhev3eZaQ3dhqXN23UrLHpNo",
     "AIzaSyBNIoGntqsjY0ElbfrJmlBHYLep0QbYOAo",
@@ -32,13 +32,12 @@ key_manager = APIKeyManager(GOOGLE_API_KEYS)
 DATA_ROOT = "data"  # Thư mục gốc chứa dữ liệu
 DATA_FOLDERS = [    # Các thư mục con chứa tài liệu
     "DANTOCTHIEUSO",
-    "Dân tộc-Thông tin bổ sung",
     "LUẬN ÁN DÂN TỘC",
-    "QTH B ca sang T5",
-    "Dữ liệu mới",
     "Học tiếng dân tộc Khmer",
     "Bài báo Dân tộc thiểu số",
-    "THI CUỐI KÌ",
+    "Thông tin cơ bản 54 dân tộc",
+    "Baocaodantocthieuso",
+
     # Thêm các thư mục khác tùy nhu cầu
 ]
 VECTOR_STORE_PATH = "vector_store"

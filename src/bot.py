@@ -17,6 +17,7 @@ from .reflection import ReflectionEngine
 from typing import Dict
 from .deep_reasoning import DeepReasoning
 from .cultural_research_agent import CulturalResearchAgent  # Nhập lớp CulturalResearchAgent
+from langchain.embeddings import HuggingFaceEmbeddings
 
 class EthnoAI:
     def __init__(self, key_manager, data_root):
@@ -38,9 +39,8 @@ class EthnoAI:
             google_api_key=api_key,
             temperature=0.2,
         )
-        self.embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/embedding-001",
-            google_api_key=api_key
+        self.embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
 
     def setup_components(self):
@@ -99,7 +99,7 @@ class EthnoAI:
         - Không được tự tạo thêm thông tin
         - Trả lời bằng giọng điệu thân thiện, tôn trọng
         - Ngữ cảnh(tài liệu) đó cứ coi là kiến thức của bạn, không được đề cập là "dựa vào tài liệu cung cấp" mà chỉ trả lời câu hỏi của người dùng một cách vui vẻ và thân thiện
-
+        - Trả lời càng đầy đủ càng tốt
         Câu trả lời:"""
         
         prompt = PromptTemplate.from_template(template)
@@ -190,13 +190,13 @@ class EthnoAI:
             logging.info("Đang tạo câu trả lời...")
             prompt = {
                 "context": context,
-                "question": reflected_question
+                "question": question  # Sử dụng lại câu hỏi gốc của người dùng
             }
             print("=== PROMPT ===")
             print(prompt)
             print("=============")
             
-            answer = self.qa_chain.invoke({"context": context, "question": reflected_question})
+            answer = self.qa_chain.invoke(prompt)
             
             if not answer or answer.strip() == "":
                 logging.warning("Không thể tạo câu trả lời")

@@ -45,13 +45,18 @@ class CulturalResearchAgent:
         return '\n\n'.join(paragraphs)
     def rewrite_query(self, original_query: str) -> str:
         """Sử dụng LLM để viết lại câu hỏi cho tìm kiếm web."""
-        prompt = f"Viết lại câu hỏi sau để tìm kiếm thông tin: {original_query}. ví dụ với query là: viết báo cáo về dân tộc kinh. Thì phải viết lại là thông tin về dân tộc kinh. Lưu ý chỉ viết lại 1 query, không đề cập gì khác"
+        prompt = (
+        f"Viết lại câu hỏi sau để phục vụ tìm kiếm trên web. "
+        f"Chuyển nó thành một truy vấn ngắn gọn, sát nghĩa, không giải thích gì thêm.\n\n"
+        f"Câu hỏi: {original_query}\n"
+        f"Lưu ý: Truy vấn mới cần phù hợp với các nguồn uy tín như site:.gov.vn hoặc site:.edu.vn. "
+        f"Ví dụ nếu hỏi 'viết báo cáo về dân tộc Tày' thì phải chuyển thành 'thông tin về dân tộc Tày site:.gov.vn OR site:.edu.vn'."
+        )
         response = self.model.generate_content(prompt)
         return response.text.strip()  # Trả về câu hỏi đã được viết lại
 
     def search_web(self, query, max_results=5):
         """Tìm kiếm thông tin trên web sử dụng DuckDuckGo Search API."""
-        logging.info(f"Tìm kiếm web với truy vấn: {query}")  # Log truy vấn tìm kiếm
         
         # Viết lại câu hỏi trước khi tìm kiếm
         rewritten_query = self.rewrite_query(query)
@@ -123,7 +128,7 @@ class CulturalResearchAgent:
             Thông tin từ BVAI
             {context}
             Viết một bài báo cáo chuyên nghiệp theo cấu trúc chuẩn gồm các phần sau:
-
+            + Ưu tiên thông tin từ BVAI vì độ chính xác cao
             + Tiêu đề: Ngắn gọn, súc tích, phản ánh nội dung chính của báo cáo.
             + Mở đầu: Giới thiệu ngắn gọn về chủ đề báo cáo, mục tiêu và phạm vi nghiên cứu.
             + Nội dung chính: Trình bày thông tin theo các mục rõ ràng, có thể bao gồm:
